@@ -47,9 +47,9 @@ namespace DailyRoarBlog.Models
         public int CategoryId { get; set; }  //foriegn key
         public virtual Category? Category { get; set; }
 
-        public virtual ICollection<Tag> Tags { get; set; } = new HashSet<Tag>();
+        public virtual ICollection<Tag> Tags { get; set; } = new HashSet<Tag>(); //many to many
 
-        public virtual ICollection<Comment> Comments { get;} = new HashSet<Comment>();
+        public virtual ICollection<Comment> Comments { get;} = new HashSet<Comment>(); // one to many
 
 
     }

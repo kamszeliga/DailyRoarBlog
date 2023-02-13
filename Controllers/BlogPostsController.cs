@@ -7,19 +7,28 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DailyRoarBlog.Data;
 using DailyRoarBlog.Models;
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace DailyRoarBlog.Controllers
 {
+    [Authorize(Roles = "Admin")]
+
     public class BlogPostsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BlogUser> _userManager;
 
-        public BlogPostsController(ApplicationDbContext context)
+        public BlogPostsController(ApplicationDbContext context, UserManager<BlogUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: BlogPosts
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.BlogPosts.Include(b => b.Category);
@@ -27,6 +36,7 @@ namespace DailyRoarBlog.Controllers
         }
 
         // GET: BlogPosts/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.BlogPosts == null)
@@ -48,7 +58,16 @@ namespace DailyRoarBlog.Controllers
         // GET: BlogPosts/Create
         public IActionResult Create()
         {
+            string? userId = _userManager.GetUserId(User);
+
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            // add elements to include, multiselect to include all 
+            ViewData["TagList"] = new MultiSelectList(_context.Tags, "Id", "Name");
+            //foreach (var emailAddress in email.Split(";"))
+            //{
+            //    newEmail.To.Add(MailboxAddress.Parse(emailAddress));
+            //}
+
             return View();
         }
 
@@ -58,20 +77,25 @@ namespace DailyRoarBlog.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageData,ImageType,CategoryId")] BlogPost blogPost)
-        {
+        {   //TODO Add slug
+
             if (ModelState.IsValid)
             {
+                blogPost.Created = DateTime.UtcNow;
+
                 _context.Add(blogPost);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", blogPost.CategoryId);
+          
             return View(blogPost);
         }
 
         // GET: BlogPosts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+
+
             if (id == null || _context.BlogPosts == null)
             {
                 return NotFound();
@@ -82,7 +106,10 @@ namespace DailyRoarBlog.Controllers
             {
                 return NotFound();
             }
+
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", blogPost.CategoryId);
+            // add elements to include, multiselect to include all 
+            ViewData["TagList"] = new MultiSelectList(_context.Tags, "Id", "Name");
             return View(blogPost);
         }
 
@@ -102,7 +129,19 @@ namespace DailyRoarBlog.Controllers
             {
                 try
                 {
+                    //Dates Example
+                    blogPost.Created = DataUtility.GetPostGresDate(blogPost.Created);
+                    blogPost.Updated = DataUtility.GetPostGresDate(DateTime.UtcNow);
+
+                    //TODO Image Service
+
+                    //TODO Slug BlogPost
+
+
                     _context.Update(blogPost);
+
+                    //TODO Edit tags
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
