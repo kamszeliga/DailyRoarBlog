@@ -1,5 +1,7 @@
-﻿using DailyRoarBlog.Models;
+﻿using DailyRoarBlog.Data;
+using DailyRoarBlog.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace DailyRoarBlog.Controllers
@@ -7,15 +9,23 @@ namespace DailyRoarBlog.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
-        {
-            return View();
+        public async Task<IActionResult> Index()
+        {   
+            IEnumerable<BlogPost> model = await _context.BlogPosts
+                                                  .Include(b=>b.Category)
+                                                  .Where(b=>b.IsPublished == true && b.IsDeleted == false)
+                                                  .ToListAsync();
+
+            return View(model);
         }
 
         public IActionResult Privacy()
