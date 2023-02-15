@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using DailyRoar.Services.Interfaces;
 
 namespace DailyRoarBlog.Controllers
 {
@@ -20,11 +21,13 @@ namespace DailyRoarBlog.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BlogUser> _userManager;
+        private readonly IImageService _imageService;
 
-        public BlogPostsController(ApplicationDbContext context, UserManager<BlogUser> userManager)
+        public BlogPostsController(ApplicationDbContext context, UserManager<BlogUser> userManager, IImageService imageService)
         {
             _context = context;
             _userManager = userManager;
+            _imageService = imageService;
         }
 
         // GET: BlogPosts
@@ -76,7 +79,7 @@ namespace DailyRoarBlog.Controllers
             //    newEmail.To.Add(MailboxAddress.Parse(emailAddress));
             //}
 
-            return View();
+            return View(new BlogPost());
         }
 
         // POST: BlogPosts/Create
@@ -84,15 +87,26 @@ namespace DailyRoarBlog.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageData,ImageType,CategoryId")] BlogPost blogPost)
+        public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,CategoryId")] BlogPost blogPost)
         {   //TODO Add slug
 
             if (ModelState.IsValid)
             {
-                blogPost.Created = DateTime.UtcNow;
+                // format dates
+                blogPost.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
+
+                //TODO Image Service
+                if (blogPost.ImageFile != null) 
+                { 
+                    blogPost.ImageData = await _imageService.ConvertFileToByteArrayAsync(blogPost.ImageFile);
+                    blogPost.ImageType = blogPost.ImageFile.ContentType;
+
+                }
 
                 _context.Add(blogPost);
                 await _context.SaveChangesAsync();
+
+                //TODO Add Tags
                 return RedirectToAction(nameof(Index));
             }
           

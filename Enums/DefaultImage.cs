@@ -3,7 +3,7 @@
     public enum DefaultImage
     {
         BlogUserImage = 1,
-        BlostPostImage = 2, 
+        BlogPostImage = 2, 
         CategoryImage = 3,  
     }
 }
