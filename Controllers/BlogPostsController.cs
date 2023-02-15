@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using DailyRoar.Services.Interfaces;
+using DailyRoarBlog.Services.Interfaces;
 
 namespace DailyRoarBlog.Controllers
 {
@@ -22,12 +23,14 @@ namespace DailyRoarBlog.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BlogUser> _userManager;
         private readonly IImageService _imageService;
+        private readonly IBlogPostService _blogPostService;
 
-        public BlogPostsController(ApplicationDbContext context, UserManager<BlogUser> userManager, IImageService imageService)
+        public BlogPostsController(ApplicationDbContext context, UserManager<BlogUser> userManager, IImageService imageService, IBlogPostService blogPostService)
         {
             _context = context;
             _userManager = userManager;
             _imageService = imageService;
+            _blogPostService = blogPostService;
         }
 
         // GET: BlogPosts
@@ -103,10 +106,12 @@ namespace DailyRoarBlog.Controllers
 
                 }
 
-                _context.Add(blogPost);
-                await _context.SaveChangesAsync();
+                //TODO CAll service to save new blog post 
+
+                await _blogPostService.AddBlogPostAsync(blogPost);
 
                 //TODO Add Tags
+
                 return RedirectToAction(nameof(Index));
             }
           
@@ -155,16 +160,19 @@ namespace DailyRoarBlog.Controllers
                     blogPost.Created = DataUtility.GetPostGresDate(blogPost.Created);
                     blogPost.Updated = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
-                    //TODO Image Service
+                    //Image Service
+                    if (blogPost.ImageFile != null)
+                    {
+                        blogPost.ImageData = await _imageService.ConvertFileToByteArrayAsync(blogPost.ImageFile);
+                        blogPost.ImageType = blogPost.ImageFile.ContentType;
 
+                    }
                     //TODO Slug BlogPost
 
-
-                    _context.Update(blogPost);
+                    //call service to update
+                    await _blogPostService.UpdateBlogPostAsync(blogPost);
 
                     //TODO Edit tags
-
-                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -211,13 +219,14 @@ namespace DailyRoarBlog.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.BlogPosts'  is null.");
             }
+
             var blogPost = await _context.BlogPosts.FindAsync(id);
+
             if (blogPost != null)
             {
-                _context.BlogPosts.Remove(blogPost);
+                await _blogPostService.DeleteBlogPostAsync(blogPost);
             }
-            
-            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 

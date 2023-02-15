@@ -2,6 +2,8 @@ using DailyRoar.Services;
 using DailyRoar.Services.Interfaces;
 using DailyRoarBlog.Data;
 using DailyRoarBlog.Models;
+using DailyRoarBlog.Services;
+using DailyRoarBlog.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +23,7 @@ builder.Services.AddIdentity<BlogUser, IdentityRole>(options => options.SignIn.R
 
 // Custom Services
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IBlogPostService>, BlogPostService>();
 
 
 
