@@ -26,7 +26,7 @@
 </head>
 
 <body>
-
+    <partial name= "_LogOutPartial"/>
     <div class="main-wrapper">
         <div class="mouse-cursor cursor-outer"></div>
         <div class="mouse-cursor cursor-inner"></div>
@@ -121,17 +121,17 @@
     </li>
                                     @* <li><a href="home-lifestyle-blog.html">About</a></li>*@
     <li><a asp-action="ContactMe" asp-controller="Home">Contact</a></li>
-                                    @if (User.Identity!.IsAuthenticated && !User.IsInRole("Administrator"))
+                                    @if (User.Identity!.IsAuthenticated && !User.IsInRole("Admin"))
                                     {
                     <li><a asp-action="MyLikes" asp-controller="BlogPosts">My Likes</a></li>
                                     }
-                                    @if (User.IsInRole("Administrator"))
+                                    @if (User.IsInRole("Admin"))
                                     {
                     <li class="menu-item-has-children">
                         <a href="#">Author</a>
                         <ul class="axil-submenu">
                             <li>
-                                <a class="hover-flip-item-wrapper" asp-controller="Home" asp-action="AdminPage">
+                                <a class="hover-flip-item-wrapper" asp-controller="BlogPosts" asp-action="AdminPage">
                                     <span class="">
                                         <span>Admin</span>
                                     </span>
@@ -192,9 +192,18 @@
                                 </form>
                             </div>
                             <ul class="metabar-block">
-                                <li class="icon"><a href="#"><i class="fas fa-bookmark"></i></a></li>
-                                <li class="icon"><a href="#"><i class="fas fa-bell"></i></a></li>
-                                <li><a href="#"><img src="~/assets/images/others/author.png" alt="Author Images"></a></li>
+
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <li><a href="javascript:document.getElementById('logoutForm').submit();"><img src="~/assets/images/others/author.png" alt="Author Images"></a></li>
+                                } else
+                                {
+                                    <li>
+                                    <a class="btn btn-outline-success" asp-area="Identity" asp-page="/Account/Login">
+                                        <i class="fa fa-sign-in fa-2x" aria-hidden="true"></i>
+                                    </a>
+                                    </li>
+                                }
                             </ul>
                             <!-- Start Hamburger Menu  -->
                             <div class="hamburger-menu d-block d-xl-none">

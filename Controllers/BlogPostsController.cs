@@ -35,6 +35,14 @@ namespace DailyRoarBlog.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+
+        public async Task<IActionResult> AdminPage()
+        {
+            var blogPosts = await _context.BlogPosts.Include(b => b.Category).ToListAsync();
+            return View(blogPosts);
+        }
+
+
         // GET: BlogPosts/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)

@@ -1,3 +1,5 @@
+using DailyRoar.Services;
+using DailyRoar.Services.Interfaces;
 using DailyRoarBlog.Data;
 using DailyRoarBlog.Models;
 using Microsoft.AspNetCore.Identity;
@@ -17,9 +19,12 @@ builder.Services.AddIdentity<BlogUser, IdentityRole>(options => options.SignIn.R
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+// Custom Services
+builder.Services.AddScoped<IImageService, ImageService>();
 
 
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddMvc();
 
 var app = builder.Build();
 
