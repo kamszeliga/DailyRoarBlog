@@ -1,4 +1,5 @@
 ﻿using DailyRoarBlog.Data;
+using DailyRoarBlog.Helpers;
 using DailyRoarBlog.Models;
 using DailyRoarBlog.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace DailyRoarBlog.Services
         public BlogPostService(ApplicationDbContext context)
         {
             _context = context;
-         
+
         }
 
         public async Task AddBlogPostAsync(BlogPost blogPost)
@@ -44,6 +45,11 @@ namespace DailyRoarBlog.Services
 
                 throw;
             }
+        }
+
+        public Task AddTagsToBlogPostAsync(IEnumerable<int> tagIds, int blodPostsId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task DeleteBlogPostAsync(BlogPost blogPost)
@@ -82,7 +88,7 @@ namespace DailyRoarBlog.Services
                                                   .Include(b => b.Category)
                                                   .Include(b => b.Tags)
                                                   .Include(b => b.Comments)
-                                                  .FirstOrDefaultAsync(b=>b.Id == blogPostId);
+                                                  .FirstOrDefaultAsync(b => b.Id == blogPostId);
                 return blogPost!;
             }
             catch (Exception)
@@ -91,6 +97,24 @@ namespace DailyRoarBlog.Services
                 throw;
             }
         }
+
+        public async Task<BlogPost> GetBlogPostAsync(string blogPostSlug)
+        {
+            try
+            {
+                BlogPost? blogPost = await _context.BlogPosts
+                                                  .Include(b => b.Category)
+                                                  .Include(b => b.Tags)
+                                                  .Include(b => b.Comments)
+                                                  .FirstOrDefaultAsync(b => b.Slug == blogPostSlug);
+                return blogPost!;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        } 
 
         public async Task<IEnumerable<BlogPost>> GetBlogPostsAsync()
         {
@@ -110,7 +134,7 @@ namespace DailyRoarBlog.Services
             }
         }
 
-        public async Task<IEnumerable<Category>> GetCategoriesAsync(int categoryId)
+        public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
             try
             {
@@ -222,6 +246,21 @@ namespace DailyRoarBlog.Services
             }
         }
 
+        public Task<bool> IsTagOnBlogPostAsync(int tagId, int blogPostId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveAllBlogPostTagsAsync(int blogPostId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<BlogPost> Search(string searchString)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task UpdateBlogPostAsync(BlogPost blogPost)
         {
             try
@@ -240,6 +279,37 @@ namespace DailyRoarBlog.Services
         public Task UpdateCategoryAsync(Category category)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> ValidateSlugAsync(string title, int blogId)
+        {
+            try
+            {
+                string newSlug = StringHelper.BlogSlug(title);
+
+                if (blogId == 0)
+                {
+                    return !await _context.BlogPosts.AnyAsync(b => b.Slug == newSlug);
+                } 
+                else 
+                {
+                    BlogPost? blogPost = await _context.BlogPosts.AsNoTracking().FirstOrDefaultAsync(b=>b.Id == blogId);    
+
+                    string? oldSlug = blogPost?.Slug;
+
+                    if (!string.Equals(oldSlug, newSlug)) 
+                    {
+                        return !await _context.BlogPosts.AnyAsync(b => b.Id != blogPost!.Id && b.Slug == newSlug);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

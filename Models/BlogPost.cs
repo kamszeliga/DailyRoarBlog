@@ -24,8 +24,9 @@ namespace DailyRoarBlog.Models
 
         [DataType(DataType.Date)]
         public DateTime? Updated { get; set; }
-        
+
         //TODO Make Slug Required
+        [Required]
         public string? Slug { get; set; }
 
         [Display(Name = "Deleted?")]

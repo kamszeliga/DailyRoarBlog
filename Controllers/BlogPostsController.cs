@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using DailyRoar.Services.Interfaces;
 using DailyRoarBlog.Services.Interfaces;
+using DailyRoarBlog.Helpers;
 
 namespace DailyRoarBlog.Controllers
 {
@@ -20,47 +21,47 @@ namespace DailyRoarBlog.Controllers
 
     public class BlogPostsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        //private readonly ApplicationDbContext _context;
         private readonly UserManager<BlogUser> _userManager;
         private readonly IImageService _imageService;
         private readonly IBlogPostService _blogPostService;
 
-        public BlogPostsController(ApplicationDbContext context, UserManager<BlogUser> userManager, IImageService imageService, IBlogPostService blogPostService)
+
+        public BlogPostsController(UserManager<BlogUser> userManager, IImageService imageService, IBlogPostService blogPostService)
         {
-            _context = context;
+            //_context = context;
             _userManager = userManager;
             _imageService = imageService;
             _blogPostService = blogPostService;
         }
 
-        // GET: BlogPosts
-        [AllowAnonymous]
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.BlogPosts.Include(b => b.Category);
-            return View(await applicationDbContext.ToListAsync());
-        }
+        //// GET: BlogPosts
+        //[AllowAnonymous]
+        //public async Task<IActionResult> Index()
+        //{
+        //    var applicationDbContext = _context.BlogPosts.Include(b => b.Category);
+        //    return View(await applicationDbContext.ToListAsync());
+        //}
 
 
         public async Task<IActionResult> AdminPage()
         {
-            var blogPosts = await _context.BlogPosts.Include(b => b.Category).ToListAsync();
+            var blogPosts = await _blogPostService.GetBlogPostsAsync();
             return View(blogPosts);
         }
 
 
         // GET: BlogPosts/Details/5
         [AllowAnonymous]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string? slug)
         {
-            if (id == null || _context.BlogPosts == null)
+            if (string.IsNullOrEmpty(slug))
             {
                 return NotFound();
             }
 
-            var blogPost = await _context.BlogPosts
-                .Include(b => b.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var blogPost = await _blogPostService.GetBlogPostAsync(slug);
+
             if (blogPost == null)
             {
                 return NotFound();
@@ -70,17 +71,11 @@ namespace DailyRoarBlog.Controllers
         }
 
         // GET: BlogPosts/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
             string? userId = _userManager.GetUserId(User);
 
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
-            // add elements to include, multiselect to include all 
-            ViewData["TagList"] = new MultiSelectList(_context.Tags, "Id", "Name");
-            //foreach (var emailAddress in email.Split(";"))
-            //{
-            //    newEmail.To.Add(MailboxAddress.Parse(emailAddress));
-            //}
+            ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
 
             return View(new BlogPost());
         }
@@ -91,16 +86,25 @@ namespace DailyRoarBlog.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,CategoryId")] BlogPost blogPost)
-        {   //TODO Add slug
-
+        {  
             if (ModelState.IsValid)
             {
+                // Add slug
+                if (!await _blogPostService.ValidateSlugAsync(blogPost.Title!, blogPost.Id))
+                {
+                    ModelState.AddModelError("Title", "This title is already being used.");
+
+                    ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
+                    return View(blogPost);
+                }
+                blogPost.Slug = StringHelper.BlogSlug(blogPost.Title!);
+
                 // format dates
                 blogPost.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
                 //TODO Image Service
-                if (blogPost.ImageFile != null) 
-                { 
+                if (blogPost.ImageFile != null)
+                {
                     blogPost.ImageData = await _imageService.ConvertFileToByteArrayAsync(blogPost.ImageFile);
                     blogPost.ImageType = blogPost.ImageFile.ContentType;
 
@@ -114,7 +118,7 @@ namespace DailyRoarBlog.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-          
+            ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
             return View(blogPost);
         }
 
@@ -123,20 +127,21 @@ namespace DailyRoarBlog.Controllers
         {
 
 
-            if (id == null || _context.BlogPosts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var blogPost = await _context.BlogPosts.FindAsync(id);
+            var blogPost = await _blogPostService.GetBlogPostAsync(id.Value);
+
             if (blogPost == null)
             {
                 return NotFound();
             }
 
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", blogPost.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name", blogPost.CategoryId);
             // add elements to include, multiselect to include all 
-            ViewData["TagList"] = new MultiSelectList(_context.Tags, "Id", "Name");
+            //ViewData["TagList"] = new MultiSelectList(_context.Tags, "Id", "Name");
             return View(blogPost);
         }
 
@@ -167,7 +172,16 @@ namespace DailyRoarBlog.Controllers
                         blogPost.ImageType = blogPost.ImageFile.ContentType;
 
                     }
-                    //TODO Slug BlogPost
+                    // Slug BlogPost
+                    // Add slug
+                    if (!await _blogPostService.ValidateSlugAsync(blogPost.Title!, blogPost.Id))
+                    {
+                        ModelState.AddModelError("Title", "This title is already being used.");
+
+                        ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
+                        return View(blogPost);
+                    }
+                    blogPost.Slug = StringHelper.BlogSlug(blogPost.Title!);
 
                     //call service to update
                     await _blogPostService.UpdateBlogPostAsync(blogPost);
@@ -176,7 +190,7 @@ namespace DailyRoarBlog.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BlogPostExists(blogPost.Id))
+                    if (!await BlogPostExists(blogPost.Id))
                     {
                         return NotFound();
                     }
@@ -187,21 +201,20 @@ namespace DailyRoarBlog.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", blogPost.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name", blogPost.CategoryId);
             return View(blogPost);
         }
 
         // GET: BlogPosts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.BlogPosts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var blogPost = await _context.BlogPosts
-                .Include(b => b.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var blogPost = await _blogPostService.GetBlogPostAsync(id.Value);
+
             if (blogPost == null)
             {
                 return NotFound();
@@ -215,12 +228,12 @@ namespace DailyRoarBlog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.BlogPosts == null)
+            if (id == null) 
             {
-                return Problem("Entity set 'ApplicationDbContext.BlogPosts'  is null.");
+                return NotFound();
             }
 
-            var blogPost = await _context.BlogPosts.FindAsync(id);
+            var blogPost = await _blogPostService.GetBlogPostAsync(id);
 
             if (blogPost != null)
             {
@@ -230,9 +243,9 @@ namespace DailyRoarBlog.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BlogPostExists(int id)
+        private async Task<bool> BlogPostExists(int id)
         {
-          return (_context.BlogPosts?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (await _blogPostService.GetBlogPostsAsync()).Any(b => b.Id == id);
         }
     }
 }

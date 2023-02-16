@@ -10,8 +10,19 @@ namespace DailyRoarBlog.Services.Interfaces
         public Task AddBlogPostAsync(BlogPost blogPost);
 
         public Task UpdateBlogPostAsync(BlogPost blogPost);
+        /// <summary>
+        /// Get a single BlogPost by Id (integer)
+        /// </summary>
+        /// <param name="blogPostId"></param>
+        /// <returns></returns>
 
         public Task<BlogPost> GetBlogPostAsync(int blogPostId);
+        /// <summary>
+        /// Get a single BlogPost by Slu (string)
+        /// </summary>
+        /// <param name="blogPostSlug"></param>
+        /// <returns></returns>
+        public Task<BlogPost> GetBlogPostAsync(string blogPostSlug);
 
         public Task DeleteBlogPostAsync(BlogPost blogPost);
 
@@ -34,9 +45,21 @@ namespace DailyRoarBlog.Services.Interfaces
 
         public Task<Category> GetCategoryAsync(int categoryId);
 
-        public Task<IEnumerable<Category>> GetCategoriesAsync(int categoryId);
+        public Task<IEnumerable<Category>> GetCategoriesAsync();
 
         public Task DeleteCategoryAsync(Category category);
+
+        // Additional Methods
+
+        public Task AddTagsToBlogPostAsync(IEnumerable<int> tagIds, int blodPostsId);
+
+        public Task<bool> IsTagOnBlogPostAsync(int tagId, int blogPostId);
+
+        public Task RemoveAllBlogPostTagsAsync(int blogPostId);
+
+        public IEnumerable<BlogPost> Search(string searchString);
+        public Task<bool> ValidateSlugAsync(string title, int blogId);
+
 
     }
 }
