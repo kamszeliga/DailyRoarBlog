@@ -6,7 +6,7 @@ namespace DailyRoar.Services
     {
         private readonly string _defaultUserImage = "/img/COMINGSOON_green_bg.png";
         private readonly string _defaultBlogImage = "/img/BLOG_3.png";
-        private readonly string _defaultCategoryImage = "/img/BLOG_SKULL_1.5.png";
+        private readonly string _defaultCategoryImage = "/img/COMINGSOON_green_bg.png";
 
         public string ConvertByteArrayToFile(byte[] fileData, string extension, int defaultImage)
         {

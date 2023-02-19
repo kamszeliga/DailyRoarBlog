@@ -22,6 +22,7 @@ namespace DailyRoarBlog.Services.Interfaces
         /// </summary>
         /// <param name="blogPostSlug"></param>
         /// <returns></returns>
+        public Task AddTagsToBlogPostAsync(string stringTags, int blogPostId);
         public Task<BlogPost> GetBlogPostAsync(string blogPostSlug);
 
         public Task DeleteBlogPostAsync(BlogPost blogPost);
@@ -60,6 +61,7 @@ namespace DailyRoarBlog.Services.Interfaces
         public IEnumerable<BlogPost> Search(string searchString);
         public Task<bool> ValidateSlugAsync(string title, int blogId);
 
+        public Task<IEnumerable<Tag>> GetTagsAsync();
 
     }
 }

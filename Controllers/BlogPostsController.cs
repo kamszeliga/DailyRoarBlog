@@ -29,7 +29,6 @@ namespace DailyRoarBlog.Controllers
 
         public BlogPostsController(UserManager<BlogUser> userManager, IImageService imageService, IBlogPostService blogPostService)
         {
-            //_context = context;
             _userManager = userManager;
             _imageService = imageService;
             _blogPostService = blogPostService;
@@ -42,14 +41,11 @@ namespace DailyRoarBlog.Controllers
         //    var applicationDbContext = _context.BlogPosts.Include(b => b.Category);
         //    return View(await applicationDbContext.ToListAsync());
         //}
-
-
         public async Task<IActionResult> AdminPage()
         {
             var blogPosts = await _blogPostService.GetBlogPostsAsync();
             return View(blogPosts);
         }
-
 
         // GET: BlogPosts/Details/5
         [AllowAnonymous]
@@ -85,8 +81,10 @@ namespace DailyRoarBlog.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,CategoryId")] BlogPost blogPost)
-        {  
+        public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,CategoryId")] BlogPost blogPost, string? stringTags)
+        {
+            ModelState.Remove("Slug");
+
             if (ModelState.IsValid)
             {
                 // Add slug
@@ -102,7 +100,7 @@ namespace DailyRoarBlog.Controllers
                 // format dates
                 blogPost.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
-                //TODO Image Service
+                //Image Service
                 if (blogPost.ImageFile != null)
                 {
                     blogPost.ImageData = await _imageService.ConvertFileToByteArrayAsync(blogPost.ImageFile);
@@ -110,13 +108,19 @@ namespace DailyRoarBlog.Controllers
 
                 }
 
-                //TODO CAll service to save new blog post 
+                //CAll service to save new blog post 
 
                 await _blogPostService.AddBlogPostAsync(blogPost);
 
-                //TODO Add Tags
+                // Add Tags
 
-                return RedirectToAction(nameof(Index));
+                if (!string.IsNullOrWhiteSpace(stringTags)) 
+                {
+                    //add tags using service
+                    await _blogPostService.AddTagsToBlogPostAsync(stringTags, blogPost.Id);
+                }
+
+                return RedirectToAction(nameof(AdminPage));
             }
             ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
             return View(blogPost);
@@ -140,6 +144,10 @@ namespace DailyRoarBlog.Controllers
             }
 
             ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name", blogPost.CategoryId);
+
+            IEnumerable<string> tagNames = blogPost.Tags.Select(t => t.Name!);
+            ViewData["Tags"] = string.Join(", ", tagNames);
+
             // add elements to include, multiselect to include all 
             //ViewData["TagList"] = new MultiSelectList(_context.Tags, "Id", "Name");
             return View(blogPost);
@@ -150,7 +158,7 @@ namespace DailyRoarBlog.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageData,ImageType,CategoryId")] BlogPost blogPost)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,CategoryId")] BlogPost blogPost, string? stringTags)
         {
             if (id != blogPost.Id)
             {
@@ -161,6 +169,15 @@ namespace DailyRoarBlog.Controllers
             {
                 try
                 {
+                    if (!await _blogPostService.ValidateSlugAsync(blogPost.Title!, blogPost.Id))
+                    {
+                        ModelState.AddModelError("Title", "This title is already being used.");
+
+                        ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
+                        return View(blogPost);
+                    }
+                    blogPost.Slug = StringHelper.BlogSlug(blogPost.Title!);
+
                     //Dates Example
                     blogPost.Created = DataUtility.GetPostGresDate(blogPost.Created);
                     blogPost.Updated = DataUtility.GetPostGresDate(DateTime.UtcNow);
@@ -187,6 +204,14 @@ namespace DailyRoarBlog.Controllers
                     await _blogPostService.UpdateBlogPostAsync(blogPost);
 
                     //TODO Edit tags
+                    await _blogPostService.RemoveAllBlogPostTagsAsync(blogPost.Id);
+                    if (!string.IsNullOrWhiteSpace(stringTags))
+                    {
+                        //add tags using service
+                        await _blogPostService.AddTagsToBlogPostAsync(stringTags, blogPost.Id);
+                    }
+
+                    return RedirectToAction(nameof(AdminPage));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -199,7 +224,6 @@ namespace DailyRoarBlog.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name", blogPost.CategoryId);
             return View(blogPost);
@@ -240,7 +264,7 @@ namespace DailyRoarBlog.Controllers
                 await _blogPostService.DeleteBlogPostAsync(blogPost);
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AdminPage));
         }
 
         private async Task<bool> BlogPostExists(int id)

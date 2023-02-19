@@ -52,6 +52,42 @@ namespace DailyRoarBlog.Services
             throw new NotImplementedException();
         }
 
+        public async Task AddTagsToBlogPostAsync(string stringTags, int blogPostId) 
+        {
+            try
+            {
+                BlogPost? blogPost = await _context.BlogPosts.FindAsync(blogPostId);
+
+                if (blogPost == null)
+                {
+                    return;
+                }
+
+                foreach (string tagName in stringTags.Split(','))
+                {
+                    Tag? tag = await _context.Tags.FirstOrDefaultAsync(t => t.Name.ToLower().Trim() == tagName.ToLower().Trim());
+
+                    if (tag != null)
+                    {
+                        blogPost.Tags.Add(tag);
+                    }
+                    else {
+                        Tag newTag = new Tag() { Name = tagName.Trim() };
+                        _context.Tags.Add(newTag);
+
+                        blogPost.Tags.Add(newTag);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public async Task DeleteBlogPostAsync(BlogPost blogPost)
         {
             try
@@ -173,10 +209,10 @@ namespace DailyRoarBlog.Services
                                                                 .Include(b => b.Category)
                                                                 .Include(b => b.Tags)
                                                                 .Include(b => b.Comments)
-                                                                .ThenInclude(c => c.Author)
+                                                                    .ThenInclude(c => c.Author)
                                                                 .ToListAsync();
 
-                return blogPosts.OrderByDescending(b => b.Comments);
+                return blogPosts.OrderByDescending(b => b.Comments.Count);
             }
             catch (Exception)
             {
@@ -251,9 +287,24 @@ namespace DailyRoarBlog.Services
             throw new NotImplementedException();
         }
 
-        public Task RemoveAllBlogPostTagsAsync(int blogPostId)
+        public async Task RemoveAllBlogPostTagsAsync(int blogPostId)
         {
-            throw new NotImplementedException();
+            BlogPost? blogPost = await _context.BlogPosts.Include(b => b.Tags).FirstOrDefaultAsync(b => b.Id == blogPostId);
+
+            try
+            {
+                if (blogPost != null)
+                {
+                    blogPost.Tags.Clear();
+                    _context.Update(blogPost);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public IEnumerable<BlogPost> Search(string searchString)
@@ -304,6 +355,23 @@ namespace DailyRoarBlog.Services
                 }
 
                 return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Tag>> GetTagsAsync() 
+        {
+            try
+            {
+                IEnumerable<Tag> tags = await _context.Tags
+                                                      .Include(t => t.BlogPosts)
+                                                      .ToListAsync();
+
+                return tags;
             }
             catch (Exception)
             {
