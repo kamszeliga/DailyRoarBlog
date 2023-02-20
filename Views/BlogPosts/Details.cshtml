@@ -5,62 +5,41 @@
 @using DailyRoarBlog.Enums
 
 @inject IImageService _ImageService
-@inject IBlogPostService _BlogService
+@inject IBlogPostService _BlogPostService
 
 <div class="axil-post-list-area axil-section-gap bg-color-white">
     <div class="container">
         <div class="row">
+            <div class="col-lg-4 col-xl-4 mt_md--40 mt_sm--40 order-last">
+            <partial name="_SideBarArticle" />
+            </div>
             <div class="col-lg-8 col-xl-8">
                <b class="categoryHeader"> @Html.DisplayFor(model => model.Category.Name)</b>
                 <div class="page-title">
                     <h2 class="title mb-20">@Html.DisplayFor(model => model.Title)</h2>
                 </div>
                 <ul class="post-meta-list">
-                <li class="headerDate">@Model.Created.ToString("MMM dd, yyyy")</li>
-                <li class="headerDate">@Model.Comments.Count Comments</li>
+                     <li class="headerDate">@Model.Created.ToString("MMM dd, yyyy")</li>
+                     <li class="headerDate">@Model.Comments.Count Comments</li>
                </ul>
                <hr />
-                <a asp-controller="BlogPosts" asp-action="Details" asp-route-slug="@Model.Slug">
-                                    <img src="@_ImageService.ConvertByteArrayToFile(Model.ImageData!, Model.ImageType!,(int)DefaultImage.BlogPostImage)" alt="Post Images" />
-                                </a>
-                <dl class="row">
-        <dt class = "col-sm-2">
-                        @Html.DisplayNameFor(model => model.Abstract)
-        </dt>
-        <dd class = "col-sm-10">
-                        @Html.DisplayFor(model => model.Abstract)
-        </dd>
-        <dt class = "col-sm-2">
-                        @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        <dd class = "col-sm-10">
-                        @Html.Raw(Model.Content)
-        </dd>
-        <dt class = "col-sm-2">
-                        @Html.DisplayNameFor(model => model.Created)
-        </dt>
-        <dd class = "col-sm-10">
-                        @Html.DisplayFor(model => model.Created)
-        </dd>
-        <dt class = "col-sm-2">
-                        @Html.DisplayNameFor(model => model.Updated)
-        </dt>
-        <dd class = "col-sm-10">
-                        @Html.DisplayFor(model => model.Updated)
-        </dd>
-        <dt class = "col-sm-2">
-                        @Html.DisplayNameFor(model => model.Category)
-        </dt>
-
-        </dl>
-        <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
-
+                <p>@Html.DisplayFor(model => model.Abstract)</p>
+                 <a asp-controller="BlogPosts" asp-action="Details" asp-route-slug="@Model.Slug">
+                 <img class="detailsImage" src="@_ImageService.ConvertByteArrayToFile(Model.ImageData!, Model.ImageType!,(int)DefaultImage.BlogPostImage)" alt="Post Images" />
+                 </a>
+                 <div>
+                   <p>@Html.Raw(Model.Content)</p>
+                   <div class="tagcloud mb-2">@foreach (Tag tag in Model.Tags)
+                        {
+                                 <a href="#">@tag.Name</a>
+                        } 
+                        <ul class="post-meta-list">
+                        <li class="headerDate text-end">@Model.Comments.Count Comments</li>
+                        </ul>
+                    </div>
+                   <hr />
+                   Comments here
             </div>
-            <div class="col-lg-4 col-xl-4 mt_md--40 mt_sm--40">
-                @*<partial name="_SideBar" />*@
             </div>
             </div>
         </div>

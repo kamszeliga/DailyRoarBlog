@@ -28,6 +28,9 @@
                      @Model.Title
              </a>
          </h4>
+         <a asp-action="Details" asp-controller="BlogPosts" asp-route-slug="@Model.Slug">
+            @Model.Abstract
+             </a>
          <div class="post-meta-wrapper">
              <div class="post-meta">
                  <div class="content">
