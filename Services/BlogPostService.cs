@@ -189,7 +189,9 @@ namespace DailyRoarBlog.Services
         {
             try
             {
-                Category? category = await _context.Categories.Include(c =>c.BlogPosts).FirstOrDefaultAsync();
+                Category? category = await _context.Categories
+                                                   .Include(c =>c.BlogPosts)
+                                                   .FirstOrDefaultAsync(c=>c.Id == categoryId);
 
                 return category!;
             }
@@ -307,9 +309,44 @@ namespace DailyRoarBlog.Services
             }
         }
 
-        public IEnumerable<BlogPost> Search(string searchString)
+        public IEnumerable<BlogPost> SearchBlogPosts(string? searchString)
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<BlogPost> blogPosts = new List<BlogPost>();
+
+                if (string.IsNullOrEmpty(searchString)) 
+                {
+                    return blogPosts;
+                } else
+                {
+                    searchString = searchString.Trim().ToLower();
+
+                    blogPosts = _context.BlogPosts.Where(b => b.Title!.ToLower().Contains(searchString) ||
+                                                            b.Abstract!.ToLower().Contains(searchString) ||
+                                                            b.Content!.ToLower().Contains(searchString) ||
+                                                            b.Category!.Name!.ToLower().Contains(searchString) ||
+                                                            b.Comments.Any(c => c.Body!.ToLower().Contains(searchString) ||
+                                                                              c.Author!.FirstName!.ToLower().Contains(searchString) ||
+                                                                              c.Author!.LastName!.ToLower().Contains(searchString)) ||
+                                                            b.Tags.Any(t => t.Name!.ToLower().Contains(searchString)))
+                                                  .Include(b => b.Comments)
+                                                          .ThenInclude(c => c.Author)
+                                                  .Include(b => b.Category)
+                                                  .Include(b => b.Tags)
+                                                  .Where(b => b.IsDeleted == false && b.IsPublished == true)
+                                                  .AsNoTracking()
+                                                  .OrderByDescending(b => b.Created)
+                                                  .AsEnumerable();
+                    return blogPosts;
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }        
         }
 
         public async Task UpdateBlogPostAsync(BlogPost blogPost)

@@ -1,0 +1,31 @@
+﻿@model DailyRoarBlog.Models.Category
+
+@using DailyRoar.Services.Interfaces;
+@using DailyRoarBlog.Services.Interfaces;
+
+
+@inject IImageService _ImageService
+@inject IBlogPostService _BlogService
+
+
+<div class="axil-author-area axil-author-banner bg-color-grey">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="about-author">
+                    <div class="media">
+                        <div class="media-body">
+                            <div class="author-info">
+                                <h1 class="title"><a href="#">@Html.DisplayNameFor(model => model.Name)</a></h1>
+                            </div>
+                            <div class="content">
+                                <p class="b1 description">
+                                    @Html.DisplayNameFor(model => model.Description)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

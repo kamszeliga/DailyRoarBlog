@@ -58,7 +58,7 @@ namespace DailyRoarBlog.Services.Interfaces
 
         public Task RemoveAllBlogPostTagsAsync(int blogPostId);
 
-        public IEnumerable<BlogPost> Search(string searchString);
+        public IEnumerable<BlogPost> SearchBlogPosts(string? searchString);
         public Task<bool> ValidateSlugAsync(string title, int blogId);
 
         public Task<IEnumerable<Tag>> GetTagsAsync();

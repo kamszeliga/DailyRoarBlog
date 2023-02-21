@@ -7,16 +7,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DailyRoarBlog.Data;
 using DailyRoarBlog.Models;
+using X.PagedList;
+using DailyRoarBlog.Services.Interfaces;
+using DailyRoarBlog.Models.ViewModels;
 
 namespace DailyRoarBlog.Controllers
 {
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBlogPostService _blogPostService;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context, IBlogPostService blogPostService)
         {
             _context = context;
+            _blogPostService = blogPostService;
         }
 
         // GET: Categories
@@ -28,21 +33,27 @@ namespace DailyRoarBlog.Controllers
         }
 
         // GET: Categories/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int? pageNum)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _context.Comments == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _blogPostService.GetCategoryAsync(id.Value);
+
             if (category == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            int pageSize = 3;
+            int page = pageNum ?? 1;
+
+            IPagedList<BlogPost> blogPosts = category.BlogPosts.ToPagedList(page, pageSize);
+
+            return View(new BlogPostCategoryViewModel() { Category = category, Posts = blogPosts });
+
         }
 
         // GET: Categories/Create

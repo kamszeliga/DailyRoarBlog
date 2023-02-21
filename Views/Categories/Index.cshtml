@@ -1,53 +1,54 @@
-﻿@model IEnumerable<DailyRoarBlog.Models.Category>
+﻿@model IPagedList<DailyRoarBlog.Models.BlogPost>
 
-@{
-    ViewData["Title"] = "Index";
-}
+@using DailyRoarBlog.Services.Interfaces
+@using DailyRoar.Services.Interfaces
+@using DailyRoarBlog.Enums
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 
-<h1>Index</h1>
+@inject IImageService _ImageService
+@inject IBlogPostService _BlogService
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageData)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageType)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImageData)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImageType)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<!-- Start Author Area  -->
+<partial name="_CategoryArea"/>
+
+<!-- End Author Area  -->
+
+<!-- Start Post List Wrapper  -->
+<div class="axil-post-list-area axil-section-gap bg-color-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-title">
+                    <h2 class="title mb--40">Articles By This Author</h2>
+                </div>
+            </div>
+
+            <div class="col-lg-8 col-xl-8">
+                @foreach (var blogPost in Model)
+                {
+                  <partial name="_BlogCard" model="@blogPost"/>
+                }
+@*                <div>
+                    <div>
+                        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                    </div>
+                    @Html.PagedListPager(Model, pageNum => Url.Action("Index", new { pageNum }),
+                    new PagedListRenderOptions
+                    {
+                        LiElementClasses = new string[] {"my-page-item"}, 
+                        PageClasses = new string[] {"my-page-link"}
+                    })
+                </div>
+*@            </div>
+
+            <div class="col-lg-4 col-xl-4 mt_md--40 mt_sm--40">
+                <partial name="_SideBar" />
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- End Post List Wrapper  -->
