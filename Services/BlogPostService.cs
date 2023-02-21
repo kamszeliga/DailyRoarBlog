@@ -142,6 +142,7 @@ namespace DailyRoarBlog.Services
                                                   .Include(b => b.Category)
                                                   .Include(b => b.Tags)
                                                   .Include(b => b.Comments)
+                                                  .ThenInclude(c => c.Author)
                                                   .FirstOrDefaultAsync(b => b.Slug == blogPostSlug);
                 return blogPost!;
             }

@@ -25,6 +25,10 @@ body {
     min-height: 600px;
 }
 
+.commentEditor {
+    min-height: 200px;
+}
+
 .form-check-input {
     position: relative !important;
     opacity: 1 !important;
@@ -100,4 +104,10 @@ body {
 .categoryHeaderImage {
     width: 150px;
     height: 150px;
+}
+
+.commentAuthorImage {
+    width: 80px;
+    height: 80px;
+    border-radius: 1rem !important;
 }
