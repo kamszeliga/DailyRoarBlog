@@ -19,7 +19,7 @@
                     <div class="media">
                         <div class="thumbnail">
                             <a href="#">
-                                <img src="@_ImageService.ConvertByteArrayToFile(Model.Category!.ImageData!, Model.Category!.ImageType!,(int)DefaultImage.CategoryImage)" alt="Category Images">
+                                <img src="@_ImageService.ConvertByteArrayToFile(Model.Category!.ImageData!, Model.Category!.ImageType!,(int)DefaultImage.CategoryImage)" class="categoryHeaderImage" alt="Category Images">
                             </a>
                         </div>
                         <div class="media-body">
@@ -54,7 +54,7 @@
                           <partial name="_BlogCard" model="@post"/>
                 }
                 <div>
-                    @Html.PagedListPager(Model.Posts, pageNum => Url.Action("Details", new { pageNum, id = Model.Category!.Id}),
+                    @Html.PagedListPager(Model.Posts, pageNum => Url.Action("Details", new { pageNum = pageNum, id = Model.Category!.Id}),
                     new PagedListRenderOptions
                     {
                         LiElementClasses = new string[] {"my-page-item"}, 

@@ -190,8 +190,8 @@ namespace DailyRoarBlog.Services
             try
             {
                 Category? category = await _context.Categories
-                                                   .Include(c =>c.BlogPosts)
-                                                   .FirstOrDefaultAsync(c=>c.Id == categoryId);
+                                                   .Include(c => c.BlogPosts)
+                                                   .FirstOrDefaultAsync(c => c.Id == categoryId);
 
                 return category!;
             }
@@ -222,6 +222,7 @@ namespace DailyRoarBlog.Services
                 throw;
             }
         }
+
         public async Task<IEnumerable<BlogPost>> GetPopularPostsAsync(int count)
         {
             try
@@ -263,6 +264,7 @@ namespace DailyRoarBlog.Services
                 throw;
             }
         }
+
         public async Task<IEnumerable<BlogPost>> GetRecentPostsAsync(int count)
         {
             try
@@ -416,5 +418,23 @@ namespace DailyRoarBlog.Services
                 throw;
             }
         }
+        public async Task<Tag> GetTagAsync(int tagId) 
+        {
+            try
+            {
+                Tag? tag = await _context.Tags
+                                         .Include(t => t.BlogPosts)
+                                         .ThenInclude(b => b.Category)
+                                         .FirstOrDefaultAsync(t => t.Id == tagId);
+
+                return tag!;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 }

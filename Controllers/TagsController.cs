@@ -7,16 +7,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DailyRoarBlog.Data;
 using DailyRoarBlog.Models;
+using DailyRoarBlog.Models.ViewModels;
+using X.PagedList;
+using DailyRoarBlog.Services.Interfaces;
 
 namespace DailyRoarBlog.Controllers
 {
     public class TagsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBlogPostService _blogPostService;
 
-        public TagsController(ApplicationDbContext context)
+        public TagsController(ApplicationDbContext context, IBlogPostService blogPostService)
         {
             _context = context;
+            _blogPostService= blogPostService;
         }
 
         // GET: Tags
@@ -28,25 +33,30 @@ namespace DailyRoarBlog.Controllers
         }
 
         // GET: Tags/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int? pageNum)
         {
             if (id == null || _context.Tags == null)
             {
                 return NotFound();
             }
 
-            var tag = await _context.Tags
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var tag = await _blogPostService.GetTagAsync(id.Value);
+
             if (tag == null)
             {
                 return NotFound();
             }
 
-            return View(tag);
+            int pageSize = 3;
+            int page = pageNum ?? 1;
+
+            IPagedList<BlogPost> blogPosts = tag.BlogPosts.ToPagedList(page, pageSize);
+
+            return View(new TagBlogPostViewModel() { Tag = tag, Posts = blogPosts });
         }
 
-        // GET: Tags/Create
-        public IActionResult Create()
+            // GET: Tags/Create
+            public IActionResult Create()
         {
             return View();
         }

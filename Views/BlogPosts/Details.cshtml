@@ -11,10 +11,10 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 col-xl-4 mt_md--40 mt_sm--40 order-last">
-            <partial name="_SideBarArticle" />
+            <partial name="_SideBar" />
             </div>
             <div class="col-lg-8 col-xl-8">
-               <b class="categoryHeader"> @Html.DisplayFor(model => model.Category.Name)</b>
+               <b class="categoryHeader"> @Html.DisplayFor(model => model.Category!.Name)</b>
                 <div class="page-title">
                     <h2 class="title mb-20">@Html.DisplayFor(model => model.Title)</h2>
                 </div>
@@ -31,202 +31,49 @@
                    <p>@Html.Raw(Model.Content)</p>
                    <div class="tagcloud mb-2">@foreach (Tag tag in Model.Tags)
                         {
-                                     <a href="#">@tag.Name</a>
+                            <a asp-controller="Tags" asp-action="Details" asp-route-id="@tag.Id">@tag.Name</a>
                         } 
                         <ul class="post-meta-list">
                         <li class="headerDate text-end">@Model.Comments.Count Comments</li>
                         </ul>
                     </div>
                    <hr />
-                                               <div class="axil-comment-area">
-                                <div class="axil-total-comment-post">
-                                    <div class="title">
-                                        <h4 class="mb--0">30+ Comments</h4>
-                                    </div>
-                                    <div class="add-comment-button cerchio">
-                                        <a class="axil-button button-rounded" href="post-details.html" tabindex="0"><span>Add Your Comment</span></a>
-                                    </div>
-                                </div>
+                   <div class="axil-comment-area">
 
-                                <!-- Start Comment Respond  -->
-                                <div class="comment-respond">
-                                    <h4 class="title">Post a comment</h4>
-                                    <form action="#">
-                                        <p class="comment-notes"><span id="email-notes">Your email address will not be
-                                                published.</span> Required fields are marked <span
-                                                class="required">*</span></p>
-                                        <div class="row row--10">
-                                            <div class="col-lg-4 col-md-4 col-12">
-                                                <div class="form-group">
-                                                    <label for="name">Your Name</label>
-                                                    <input id="name" type="text">
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4 col-md-4 col-12">
-                                                <div class="form-group">
-                                                    <label for="email">Your Email</label>
-                                                    <input id="email" type="email">
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4 col-md-4 col-12">
-                                                <div class="form-group">
-                                                    <label for="website">Your Website</label>
-                                                    <input id="website" type="text">
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="form-group">
-                                                    <label for="message">Leave a Reply</label>
-                                                    <textarea id="message" name="message"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-12">
-                                                <p class="comment-form-cookies-consent">
-                                                    <input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes">
-                                                    <label for="wp-comment-cookies-consent">Save my name, email, and
-                                                        website in this browser for the next time I comment.</label>
-                                                </p>
-                                            </div>
-                                            <div class="col-lg-12">
-                                                <div class="form-submit cerchio">
-                                                    <input name="submit" type="submit" id="submit" class="axil-button button-rounded" value="Post Comment">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <!-- End Comment Respond  -->
+                     <!-- Start Comment Area  -->
 
-                                <!-- Start Comment Area  -->
-                                <div class="axil-comment-area">
-                                    <h4 class="title">2 comments</h4>
-                                    <ul class="comment-list">
-                                        <!-- Start Single Comment  -->
-                                        <li class="comment">
-                                            <div class="comment-body">
-                                                <div class="single-comment">
-                                                    <div class="comment-img">
-                                                        <img src="assets/images/post-images/author/author-b2.png" alt="Author Images">
-                                                    </div>
-                                                    <div class="comment-inner">
-                                                        <h6 class="commenter">
-                                                            <a class="hover-flip-item-wrapper" href="#">
-                                                                <span class="hover-flip-item">
-                                                                    <span data-text="Cameron Williamson">Cameron Williamson</span>
-                                                                </span>
-                                                            </a>
-                                                        </h6>
-                                                        <div class="comment-meta">
-                                                            <div class="time-spent">Nov 23, 2018 at 12:23 pm</div>
-                                                            <div class="reply-edit">
-                                                                <div class="reply">
-                                                                    <a class="comment-reply-link hover-flip-item-wrapper" href="#">
-                                                                        <span class="hover-flip-item">
-                                                                            <span data-text="Reply">Reply</span>
-                                                                        </span>
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="comment-text">
-                                                            <p class="b2">Duis hendrerit velit scelerisque felis tempus, id porta
-                                                                libero venenatis. Nulla facilisi. Phasellus viverra
-                                                                magna commodo dui lacinia tempus. Donec malesuada nunc
-                                                                non dui posuere, fringilla vestibulum urna mollis.
-                                                                Integer condimentum ac sapien quis maximus. </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <ul class="children">
-                                                <!-- Start Single Comment  -->
-                                                <li class="comment">
-                                                    <div class="comment-body">
-                                                        <div class="single-comment">
-                                                            <div class="comment-img">
-                                                                <img src="assets/images/post-images/author/author-b3.png" alt="Author Images">
-                                                            </div>
-                                                            <div class="comment-inner">
-                                                                <h6 class="commenter">
-                                                                    <a class="hover-flip-item-wrapper" href="#">
-                                                                        <span class="hover-flip-item">
-                                                                            <span data-text="Rahabi Khan">Rahabi Khan</span>
-                                                                        </span>
-                                                                    </a>
-                                                                </h6>
-                                                                <div class="comment-meta">
-                                                                    <div class="time-spent">Nov 23, 2018 at 12:23 pm
-                                                                    </div>
-                                                                    <div class="reply-edit">
-                                                                        <div class="reply">
-                                                                            <a class="comment-reply-link hover-flip-item-wrapper" href="#">
-                                                                                <span class="hover-flip-item">
-                                                                                    <span data-text="Reply">Reply</span>
-                                                                                </span>
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="comment-text">
-                                                                    <p class="b2">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse lobortis cursus lacinia. Vestibulum vitae leo id diam pellentesque ornare.</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <!-- End Single Comment  -->
-                                            </ul>
-                                        </li>
-                                        <!-- End Single Comment  -->
+                     <partial name="_CommentPartial" />
 
-                                        <!-- Start Single Comment  -->
-                                        <li class="comment">
-                                            <div class="comment-body">
-                                                <div class="single-comment">
-                                                    <div class="comment-img">
-                                                        <img src="assets/images/post-images/author/author-b2.png" alt="Author Images">
-                                                    </div>
-                                                    <div class="comment-inner">
-                                                        <h6 class="commenter">
-                                                            <a class="hover-flip-item-wrapper" href="#">
-                                                                <span class="hover-flip-item">
-                                                                    <span data-text="Rahabi Khan">Rahabi Khan</span>
-                                                                </span>
-                                                            </a>
-                                                        </h6>
-                                                        <div class="comment-meta">
-                                                            <div class="time-spent">Nov 23, 2018 at 12:23 pm</div>
-                                                            <div class="reply-edit">
-                                                                <div class="reply">
-                                                                    <a class="comment-reply-link hover-flip-item-wrapper" href="#">
-                                                                        <span class="hover-flip-item">
-                                                                            <span data-text="Reply">Reply</span>
-                                                                        </span>
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="comment-text">
-                                                            <p class="b2">Duis hendrerit velit scelerisque felis tempus, id porta
-                                                                libero venenatis. Nulla facilisi. Phasellus viverra
-                                                                magna commodo dui lacinia tempus. Donec malesuada nunc
-                                                                non dui posuere, fringilla vestibulum urna mollis.
-                                                                Integer condimentum ac sapien quis maximus. </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <!-- End Single Comment  -->
-                                    </ul>
-                                </div>
-                                <!-- End Comment Area  -->
+                     <!-- End Comment Area  -->
 
-                            </div>
+                   </div>
 
             </div>
             </div>
             </div>
         </div>
     </div>
-</div>
+
+    @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+            <script src="~/ckeditor5/build/ckeditor.js"></script>
+
+            <script>
+                ClassicEditor
+                    .create(document.querySelector('.editor'), {
+                        licenseKey: '',
+                    })
+                    .then(editor => {
+                        window.editor = editor;
+                    })
+                    .catch(error => {
+                        console.error('Oops, something went wrong!');
+                        console.error('Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:');
+                        console.warn('Build id: xx09iayzufkn-lkt434h3lx2z');
+                        console.error(error);
+                    });
+            </script>
+}
