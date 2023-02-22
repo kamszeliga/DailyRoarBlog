@@ -2,6 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DailyRoarBlog.Models
 {
@@ -42,14 +43,14 @@ namespace DailyRoarBlog.Models
         [NotMapped]
         public virtual IFormFile? ImageFile { get; set; }
 
-
-        //Navigation properties
-
         public int CategoryId { get; set; }  //foriegn key
+
+        //Navigation propertie
+        [JsonIgnore]
         public virtual Category? Category { get; set; }
-
+        [JsonIgnore]
         public virtual ICollection<Tag> Tags { get; set; } = new HashSet<Tag>(); //many to many
-
+        [JsonIgnore]
         public virtual ICollection<Comment> Comments { get;} = new HashSet<Comment>(); // one to many
 
 

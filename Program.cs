@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +33,38 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 
 builder.Services.AddMvc();
 
+// Add API Configs
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Astra Blog API",
+        Version = "v1",
+        Description = "Serve up Blog Data using .Net 6 Apis",
+        Contact = new OpenApiContact
+        {
+            Name = "K.Szeliga",
+            Email = "kamrynszeliga@gmail.com",
+            Url = new Uri("https://www.linkedin.com/in/kamryn-szeliga-b4aa59190/")
+        }
+    });
+    var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+});
+
+builder.Services.AddCors(obj =>
+{
+    obj.AddPolicy("DefaultPolicy",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
+
 var app = builder.Build();
+
+app.UseCors("DefaultPolicy");
+
 
 // bundle up above services and inject them into DataUtility using the following methods
 var scope = app.Services.CreateScope();
@@ -49,6 +82,16 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Add Swagger Code
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PublicAPI v1");
+    c.InjectStylesheet("/css/swagger.css");
+    c.InjectJavascript("/js/swagger.js");
+    c.DocumentTitle = "StarLinK Blog Public API";
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
