@@ -10,6 +10,7 @@ using DailyRoarBlog.Models;
 using DailyRoarBlog.Models.ViewModels;
 using X.PagedList;
 using DailyRoarBlog.Services.Interfaces;
+using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.CopyAnalysis;
 
 namespace DailyRoarBlog.Controllers
 {
@@ -27,9 +28,9 @@ namespace DailyRoarBlog.Controllers
         // GET: Tags
         public async Task<IActionResult> Index()
         {
-              return _context.Tags != null ? 
-                          View(await _context.Tags.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Tags'  is null.");
+            IEnumerable<Tag> model = await _blogPostService.GetTagsAsync();
+
+            return View(model);
         }
 
         // GET: Tags/Details/5
@@ -70,9 +71,13 @@ namespace DailyRoarBlog.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(tag);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                await _blogPostService.AddNewTagAsync(tag);
+
+                return RedirectToAction(nameof(Index)); 
+
+                //_context.Add(tag);
+                //await _context.SaveChangesAsync();
+                //return RedirectToAction(nameof(Index));
             }
             return View(tag);
         }
@@ -80,16 +85,18 @@ namespace DailyRoarBlog.Controllers
         // GET: Tags/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Tags == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var tag = await _context.Tags.FindAsync(id);
+            Tag tag = await _blogPostService.GetTagAsync(id.Value);
+
             if (tag == null)
             {
                 return NotFound();
             }
+
             return View(tag);
         }
 
@@ -100,6 +107,8 @@ namespace DailyRoarBlog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Tag tag)
         {
+            //Create a service to remove _context, 
+
             if (id != tag.Id)
             {
                 return NotFound();
@@ -111,6 +120,7 @@ namespace DailyRoarBlog.Controllers
                 {
                     _context.Update(tag);
                     await _context.SaveChangesAsync();
+                    //Copy and paste the above value into a service and implement it here
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -156,6 +166,7 @@ namespace DailyRoarBlog.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Tags'  is null.");
             }
             var tag = await _context.Tags.FindAsync(id);
+
             if (tag != null)
             {
                 _context.Tags.Remove(tag);

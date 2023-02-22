@@ -65,5 +65,7 @@ namespace DailyRoarBlog.Services.Interfaces
 
         public Task<Tag> GetTagAsync(int tagId);
 
+        public Task AddNewTagAsync(Tag tag);
+
     }
 }

@@ -5,6 +5,7 @@ using DailyRoarBlog.Models;
 using DailyRoarBlog.Services;
 using DailyRoarBlog.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -24,8 +25,9 @@ builder.Services.AddIdentity<BlogUser, IdentityRole>(options => options.SignIn.R
 // Custom Services
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+builder.Services.AddScoped<IEmailSender, EmailService>();
 
-
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
 builder.Services.AddMvc();
 
@@ -33,6 +35,7 @@ var app = builder.Build();
 
 // bundle up above services and inject them into DataUtility using the following methods
 var scope = app.Services.CreateScope();
+
 await DataUtility.ManageDataAsync(scope.ServiceProvider);
 
 // Configure the HTTP request pipeline.

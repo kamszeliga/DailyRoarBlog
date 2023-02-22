@@ -437,5 +437,18 @@ namespace DailyRoarBlog.Services
             }
         }
 
+        public async Task AddNewTagAsync(Tag tag)
+        {
+            try
+            {
+                _context.Add(tag);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
