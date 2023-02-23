@@ -143,3 +143,11 @@ namespace DailyRoarBlog.Controllers.APIs
         }
     }
 }
+
+//A Career In Coding - Is It Right For You?
+
+//Thinking about making a career change?  Consider these facts before you do -
+
+
+
+//Do you enjoy crying? Never seeing the light of day again? If so, this may be the right choice for you. 
