@@ -7878,7 +7878,7 @@ Header Styles
 @media only screen and (max-width: 575px) {
   .axil-header .logo {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
 }
 @media only screen and (max-width: 575px) {
@@ -7998,7 +7998,7 @@ Header Styles
   display: block;
 }
 .axil-header .logo a img {
-  max-height: 37px;
+  max-height: 50px;
 }
 
 /*------------------------
@@ -8361,13 +8361,13 @@ button.search-button i {
   }
 }
 .axil-header.header-style-4 .header-bottom .logo {
-  margin-right: 40px;
+  margin-right: 10px;
   text-align: left;
 }
 @media only screen and (max-width: 767px) {
   .axil-header.header-style-4 .header-bottom .logo {
     margin-right: 0;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     text-align: center;
   }
 }
@@ -12511,4 +12511,8 @@ body {
 
 .bodyColor {
     background-color: var(--color-body) !important,
+}
+
+.footerLogo {
+   
 }
