@@ -1,10 +1,11 @@
-﻿
+﻿@model EmailData
+
 <!-- Start Author Area  -->
 <partial name="_AuthorArea" />
 <!-- End Author Area  -->
 
         <!-- Start Post List Wrapper  -->
-        <div class="axil-post-list-area axil-section-gap bg-color-white">
+        <div class="axil-post-list-area mt-3 bg-color-white">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8 col-xl-8">
@@ -12,31 +13,29 @@
                         <div class="axil-about-us">
                             <!-- Start Contact Form  -->
                             <div class="axil-section-gapTop axil-contact-form-area">
-                                <h4 class="title mb--10">Send Us a Message</h4>
-                                <p class="b3 mb--30">Your email address will not be published. All the fields are required.</p>
-@*                                 <form asp-action="EmailContact" asp-controller="Contacts" method="post">
-                                    <input type="hidden" asp-for="@Model.EmailData.GroupName" />
-                                    <div class="row row-cols-1 row-cols-md-2 g-3 mb-3">
-                                        <div class="col col-md-12">
-                                            <label asp-for="@Model.EmailData.EmailAddress" class="form-label">To:</label>
-                                            <textarea type="email" readonly class="form-control" asp-for="@Model.EmailData.EmailAddress" rows="3"></textarea>
-                                        </div>
-                                    </div>
+                                <h4 class="title mb--10">Send Me a Message</h4>
+                                <p class="b3 mb--30">Feel like reaching out? Send me an email! Your email address will not be published. All the fields are required.</p>
+                                 <form asp-action="EmailContact" asp-controller="Contacts" method="post">
                                     <div class="row row-cols-1 g-3">
-                                        <div class="col">
-                                            <label asp-for="@Model.EmailData.EmailSubject" class="form-label">Subject:</label>
-                                            <input type="text" class="form-control" asp-for="@Model.EmailData.EmailSubject" />
+                                        <div class="col col-6">
+                                            <label asp-for="@Model.EmailAddress" class="form-label">Your Email Address</label>
+                                            <input type="text" class="form-control" asp-for="@Model.EmailAddress" />
                                         </div>
+                                        <div class="col col-6">
+                                            <label asp-for="@Model.EmailSubject" class="form-label">Subject</label>
+                                            <input type="text" class="form-control" asp-for="@Model.EmailSubject" />
+                                        </div>
+
                                         <div class="col">
-                                            <label asp-for="@Model.EmailData.EmailBody" class="form-label">Message:</label>
-                                            <textarea class="form-control" rows=10 asp-for="@Model.EmailData.EmailBody" required></textarea>
+                                            <label asp-for="@Model.EmailBody" class="form-label">Message:</label>
+                                            <textarea class="form-control" rows=10 asp-for="@Model.EmailBody" required></textarea>
                                         </div>
                                         <div class="col text-end">
                                             <button class="btn btn-primary rounded-pill btnlinks" type="submit">Send</button>
                                         </div>
                                     </div>
                                 </form>
-*@                            </div>
+                            </div>
                             <!-- End Contact Form  -->
                         </div>
                         <!-- End About Area  -->
