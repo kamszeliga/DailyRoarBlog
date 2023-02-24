@@ -111,3 +111,7 @@ body {
     height: 80px;
     border-radius: 1rem !important;
 }
+
+.contactMeImage {
+    background-image: src(~/img/KamSzel_Logo_2000.png) !important;
+}

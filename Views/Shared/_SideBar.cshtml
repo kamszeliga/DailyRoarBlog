@@ -10,26 +10,6 @@
   <div class="sidebar-inner">
 
       <!-- Start Single Widget  -->
-      <div class="axil-single-widget widget widget_categories mb--30">
-          <ul>
-                   @foreach (Category category in (await _BlogService.GetCategoriesAsync()).Take(4))
-              {
-                 <li class="cat-item">
-                     <a asp-controller="Categories" asp-action="Details" asp-route-id="@category.Id" class="inner">
-                         <div class="thumbnail">
-                         <img src="@_ImageService.ConvertByteArrayToFile(category.ImageData!, category.ImageType!,(int)DefaultImage.CategoryImage)" alt="">
-                         </div>
-                         <div class="content">
-                             <h5 class="title">@category.Name</h5>
-                         </div>
-                     </a>
-                 </li>
-              }
-          </ul>
-      </div>
-      <!-- End Single Widget  -->
-
-      <!-- Start Single Widget  -->
       <div class="axil-single-widget widget widget_search mb--30">
           <h5 class="widget-title">Search</h5>
           <form asp-action="SearchIndex" asp-controller="Home" class="header-search-form d-sm-block d-none" method="post">
@@ -38,6 +18,26 @@
                   <input type="text" class="form-control" placeholder="Search" name="searchString">
               </div>
           </form>
+      </div>
+      <!-- End Single Widget  -->
+
+      <!-- Start Single Widget  -->
+      <div class="axil-single-widget widget widget_categories mb--30">
+          <ul>
+            @foreach (Category category in (await _BlogService.GetCategoriesAsync()).Take(4))
+            {
+                     <li class="cat-item">
+                         <a asp-controller="Categories" asp-action="Details" asp-route-id="@category.Id" class="inner">
+                             <div class="thumbnail">
+                             <img src="@_ImageService.ConvertByteArrayToFile(category.ImageData!, category.ImageType!,(int)DefaultImage.CategoryImage)" alt="">
+                             </div>
+                             <div class="content">
+                                 <h5 class="title">@category.Name</h5>
+                             </div>
+                         </a>
+                     </li>
+            }
+          </ul>
       </div>
       <!-- End Single Widget  -->
 
@@ -77,11 +77,10 @@
           <h5 class="widget-title">Stay In Touch</h5>
           <!-- Start Post List  -->
           <ul class="social-icon md-size justify-content-center">
-              <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-              <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-              <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-              <li><a href="#"><i class="fab fa-slack"></i></a></li>
-              <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+@*              <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+              <li><a href="#"><i class="fab fa-twitter"></i></a></li>*@
+              <li><a asp-controller="Home" asp-action="ContactMe"><i class="far fa-envelope"></i></a></li>
+              <li><a href="https://www.linkedin.com/in/kamryn-szeliga-b4aa59190/"><i class="fab fa-linkedin-in"></i></a></li>
           </ul>
           <!-- End Post List  -->
       </div>

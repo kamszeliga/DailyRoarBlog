@@ -43,6 +43,29 @@ namespace DailyRoarBlog.Controllers
             return View(model);
         }
 
+
+        public async Task<IActionResult> IndexPopular(int? pageNum)
+        {
+            int pageSize = 3;
+            int page = pageNum ?? 1;
+
+
+            IPagedList<BlogPost> model = (await _blogPostService.GetRecentPostsAsync()).ToPagedList(page, pageSize);
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> IndexRecent(int? pageNum)
+        {
+            int pageSize = 3;
+            int page = pageNum ?? 1;
+
+
+            IPagedList<BlogPost> model = (await _blogPostService.GetRecentPostsAsync()).ToPagedList(page, pageSize);
+
+            return View(model);
+        }
+
         public IActionResult SearchIndex(string? searchString, int? pageNum) 
         {
             int pageSize = 5;

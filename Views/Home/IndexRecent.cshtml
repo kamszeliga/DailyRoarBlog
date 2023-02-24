@@ -1,0 +1,58 @@
+﻿@model IPagedList<DailyRoarBlog.Models.BlogPost>
+
+@using DailyRoarBlog.Services.Interfaces
+@using DailyRoar.Services.Interfaces
+@using DailyRoarBlog.Enums
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+
+@inject IImageService _ImageService
+@inject IBlogPostService _BlogService
+
+<!-- Start Banner Area  -->
+<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img class="d-block w-100" src="~/img/ContactMe_Header_Long.png" alt="First slide">
+    </div>
+  </div>
+</div>
+<!-- End Banner Area  -->
+
+<!-- Start Post List Wrapper  -->
+<div class="axil-post-list-area axil-section-gap bg-color-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-title">
+                    <h2 class="title mb--40">Daily Roar Articles</h2>
+                </div>
+            </div>
+
+            <div class="col-lg-8 col-xl-8">
+                @foreach (var blogPost in (await _BlogService.GetRecentPostsAsync()))
+                {
+                  <partial name="_BlogCard" model="@blogPost"/>
+                }
+                <div>
+                    <div>
+                        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                    </div>
+                    @Html.PagedListPager(Model, pageNum => Url.Action("Index", new { pageNum }),
+                    new PagedListRenderOptions
+                    {
+                        LiElementClasses = new string[] {"my-page-item"}, 
+                        PageClasses = new string[] {"my-page-link"}
+                    })
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-xl-4 mt_md--40 mt_sm--40">
+                <partial name="_SideBar" />
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- End Post List Wrapper  -->
