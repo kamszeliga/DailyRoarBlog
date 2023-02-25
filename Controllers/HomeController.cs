@@ -129,19 +129,18 @@ namespace DailyRoarBlog.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EmailAdmin()
+        public async Task<IActionResult> EmailMe([Bind("EmailAddress, EmailSubject, EmailBody")] EmailData emailData)
         {
             if (ModelState.IsValid)
             {
                 string? swalMessage = string.Empty;
 
-
                 try
                 {
-                    //await _emailSender.SendEmailAsync(
-                    //                        viewModel.EmailData!.EmailAddress!,
-                    //                        viewModel.EmailData.EmailSubject!,
-                    //                        viewModel.EmailData.EmailBody!);
+                    await _emailSender.SendEmailAsync(
+                                            emailData.EmailAddress!,
+                                            emailData.EmailSubject!,
+                                            emailData.EmailBody!);
 
                     swalMessage = "Your email has been sent.";
 

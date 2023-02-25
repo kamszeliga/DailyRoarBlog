@@ -15,7 +15,7 @@
                             <div class="axil-section-gapTop axil-contact-form-area">
                                 <h4 class="title mb--10">Send Me a Message</h4>
                                 <p class="b3 mb--30">Feel like reaching out? Send me an email! Your email address will not be published. All the fields are required.</p>
-                                 <form asp-action="EmailContact" asp-controller="Contacts" method="post">
+                                 <form asp-action="EmailMe" asp-controller="Home" method="post">
                                     <div class="row row-cols-1 g-3">
                                         <div class="col col-6">
                                             <label asp-for="@Model.EmailAddress" class="form-label">Your Email Address</label>
@@ -25,7 +25,6 @@
                                             <label asp-for="@Model.EmailSubject" class="form-label">Subject</label>
                                             <input type="text" class="form-control" asp-for="@Model.EmailSubject" />
                                         </div>
-
                                         <div class="col">
                                             <label asp-for="@Model.EmailBody" class="form-label">Message:</label>
                                             <textarea class="form-control" rows=10 asp-for="@Model.EmailBody" required></textarea>

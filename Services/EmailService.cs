@@ -24,16 +24,27 @@ namespace DailyRoarBlog.Services
 
             newEmail.Sender = MailboxAddress.Parse(emailSender);
 
-            foreach (var emailAddress in email.Split(";"))
+            if (subject == "Confirm your email")
             {
-                newEmail.To.Add(MailboxAddress.Parse(emailAddress));
+                newEmail.To.Add(MailboxAddress.Parse(email));
+            }
+            else
+            {
+                newEmail.To.Add(MailboxAddress.Parse("kamrynszeliga@gmail.com"));
             }
 
             newEmail.Subject = subject;
 
             BodyBuilder emailBody = new BodyBuilder();
 
-            emailBody.HtmlBody = htmlMessage;
+            if (subject == "Confirm your email")
+            {
+                emailBody.HtmlBody = htmlMessage;
+            }
+            else
+            {
+                emailBody.HtmlBody = email + htmlMessage;
+            }
 
             newEmail.Body = emailBody.ToMessageBody();
 
