@@ -450,5 +450,35 @@ namespace DailyRoarBlog.Services
                 throw;
             }
         }
+
+        public async Task DeleteCommentAsync(Comment comment)
+        {
+            try
+            {
+                _context.Comments.Remove(comment);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<Comment> GetCommentAsync(int commentId)
+        {
+            try
+            {
+                Comment? comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId); 
+
+                return comment!;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 }

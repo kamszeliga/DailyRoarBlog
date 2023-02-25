@@ -49,6 +49,8 @@ namespace DailyRoarBlog.Services.Interfaces
         public Task<IEnumerable<Category>> GetCategoriesAsync();
 
         public Task DeleteCategoryAsync(Category category);
+        
+        public Task DeleteCommentAsync(Comment comment);
 
         // Additional Methods
 
@@ -66,6 +68,8 @@ namespace DailyRoarBlog.Services.Interfaces
         public Task<Tag> GetTagAsync(int tagId);
 
         public Task AddNewTagAsync(Tag tag);
+
+        public Task<Comment> GetCommentAsync(int commentId);
 
     }
 }

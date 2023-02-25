@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using DailyRoarBlog.Data;
 using DailyRoarBlog.Models;
 using Microsoft.AspNetCore.Identity;
+using DailyRoarBlog.Services.Interfaces;
 
 namespace DailyRoarBlog.Controllers
 {
@@ -15,11 +16,13 @@ namespace DailyRoarBlog.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BlogUser> _userManager;
+        private readonly IBlogPostService _blogPostService;
 
-        public CommentsController(ApplicationDbContext context, UserManager<BlogUser> userManager)
+        public CommentsController(ApplicationDbContext context, UserManager<BlogUser> userManager, IBlogPostService blogPostService)
         {
             _context = context;
             _userManager = userManager;
+            _blogPostService = blogPostService;
         }
 
         // GET: Comments
@@ -134,43 +137,43 @@ namespace DailyRoarBlog.Controllers
             return View(comment);
         }
 
-        // GET: Comments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Comments == null)
-            {
-                return NotFound();
-            }
+        //// GET: Comments/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null || _context.Comments == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var comment = await _context.Comments
-                .Include(c => c.Author)
-                .Include(c => c.BlogPost)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
+        //    var comment = await _context.Comments
+        //        .Include(c => c.Author)
+        //        .Include(c => c.BlogPost)
+        //        .FirstOrDefaultAsync(m => m.Id == id);
 
-            return View(comment);
-        }
+        //    if (comment == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(comment);
+        //}
 
         // POST: Comments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int commentId, string? slug)
         {
             if (_context.Comments == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Comments'  is null.");
             }
-            var comment = await _context.Comments.FindAsync(id);
+
+            Comment? comment = await _blogPostService.GetCommentAsync(commentId);
+
             if (comment != null)
             {
-                _context.Comments.Remove(comment);
+                await _blogPostService.DeleteCommentAsync(comment);
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Details", "BlogPosts", new{ slug = slug });
         }
 
         private bool CommentExists(int id)
