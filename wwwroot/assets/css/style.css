@@ -42,6 +42,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500&display=swap");
 :root {
     --color-primary: #9BB899;
+    --color-primary-alt: #d2e2d1;
     --color-secondary: #9BB899;
     --color-secondary-alt: #f2ffb6;
     --color-tertiary: #d2e2d1;
@@ -54,10 +55,10 @@
     --color-lightest: #F0F0F0;
     --color-border: #576656;
     --color-white: #ffffff;
-    --color-success: #576656;
-    --color-danger: #FF0003;
-    --color-warning: #FF8F3C;
-    --color-info: #1BA2DB;
+    --color-success: #9BB899;
+    --color-danger: #9BB899;
+    --color-warning: #9BB899;
+    --color-info: #9BB899;
     --color-facebook: #d2e2d1;
     --color-twitter: #d2e2d1;
     --color-youtube: #d2e2d1;
@@ -11995,4 +11996,19 @@ body {
 
 .contactMeImage {
     background-image: src(~/img/KamSzel_Logo_2000.png) !important;
+}
+
+.btn-primary {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary-alt) !important;
+}
+    .btn-primary:hover {
+        filter: brightness(1.1) !important;
+        color: white !important;
+    }
+
+.nav-pills.li {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
 }
