@@ -10,9 +10,12 @@ using DailyRoarBlog.Models;
 using X.PagedList;
 using DailyRoarBlog.Services.Interfaces;
 using DailyRoarBlog.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace DailyRoarBlog.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;

@@ -11,9 +11,12 @@ using DailyRoarBlog.Models.ViewModels;
 using X.PagedList;
 using DailyRoarBlog.Services.Interfaces;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.CopyAnalysis;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace DailyRoarBlog.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class TagsController : Controller
     {
         private readonly ApplicationDbContext _context;
