@@ -51,7 +51,7 @@ namespace DailyRoarBlog.Models
         [JsonIgnore]
         public virtual ICollection<Tag> Tags { get; set; } = new HashSet<Tag>(); //many to many
         [JsonIgnore]
-        public virtual ICollection<Comment> Comments { get;} = new HashSet<Comment>(); // one to many
+        public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>(); // one to many
 
 
     }
