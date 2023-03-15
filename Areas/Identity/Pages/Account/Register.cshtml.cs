@@ -169,12 +169,13 @@ namespace DailyRoarBlog.Areas.Identity.Pages.Account
         {
             try
             {
-                return new BlogUser()
-                {
-                    FirstName = Input.FirstName,
-                    LastName = Input.LastName,
+				BlogUser blogUser = Activator.CreateInstance<BlogUser>();
 
-                };
+                blogUser.FirstName = Input.FirstName;
+                blogUser.LastName = Input.LastName;
+
+                return blogUser;
+
             }
             catch
             {
