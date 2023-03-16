@@ -16,10 +16,6 @@
 <hr />
     <form asp-action="Create" enctype="multipart/form-data">
         <input type="hidden" asp-for="Id"/>
-                   @* <input type="hidden" asp-for="Created"/>
-                    <input type="hidden" asp-for="ImageData"/>
-                    <input type="hidden" asp-for="ImageType"/>
-                    <input type="hidden" asp-for="Slug"/>*@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="row">
             <div class="col-12 col-lg-4">
@@ -53,13 +49,12 @@
                 <div class="form-group" id="tagContainer">
                      <label asp-for="Tags"></label>
                     <input class="form-control" type="text" id="tagInput" name="stringTags" autocomplete="off" />
-
                     <div class="tagcloud axil-single-widget mt-2" style="display: none;">
                         @foreach (Tag tag in await _BlogPostService.GetTagsAsync())
                         {
                                 <a onclick="addTag(this)">@tag.Name</a>
                         }
-</div>
+                    </div>
                 </div>
             </div>
         </div>
