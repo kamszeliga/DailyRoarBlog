@@ -9,9 +9,11 @@ using DailyRoarBlog.Data;
 using DailyRoarBlog.Models;
 using Microsoft.AspNetCore.Identity;
 using DailyRoarBlog.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DailyRoarBlog.Controllers
 {
+    
     public class CommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -52,6 +54,7 @@ namespace DailyRoarBlog.Controllers
             return View(comment);
         }
 
+        [Authorize]
         // GET: Comments/Create
         public IActionResult Create()
         {
@@ -63,6 +66,7 @@ namespace DailyRoarBlog.Controllers
         // POST: Comments/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Body,Created,Updated,UpdateReason,BlogPostId,AuthorId")] Comment comment, string? slug)
@@ -83,6 +87,7 @@ namespace DailyRoarBlog.Controllers
         }
 
         // GET: Comments/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Comments == null)
@@ -103,6 +108,7 @@ namespace DailyRoarBlog.Controllers
         // POST: Comments/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Body,Created,Updated,UpdateReason,BlogPostId,AuthorId")] Comment comment)
@@ -159,6 +165,7 @@ namespace DailyRoarBlog.Controllers
         //}
 
         // POST: Comments/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int commentId, string? slug)
         {
             if (_context.Comments == null)
